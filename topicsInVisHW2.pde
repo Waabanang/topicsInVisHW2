@@ -82,8 +82,6 @@ void drawParticles(){
     } else {
       updateParticle(p);
     }
-    p.lastX = p.x;
-    p.lastY = p.y;
     vertex(p.x, p.y); 
   }
   endShape();
@@ -101,12 +99,29 @@ void updateParticle(Particle p){
   // corresponding to the data.
   float a = p.x * uwnd.getColumnCount() / width;
   float b = p.y * uwnd.getRowCount() / height;
+  
 
-  // Euler's integration(?)
-  float dx = readInterp(uwnd, a, b) * 10;
-  float dy = -readInterp(vwnd, a, b) * 10;
-  p.x += dx * stepsize;
-  p.y += dy * stepsize;
+
+  // Euler's integration
+  // n1 = n0 + h * (f(n0))
+  //float dx = readInterp(uwnd, a, b);
+  //float dy = -readInterp(vwnd, a, b);
+  //p.x = p.x + dx * stepsize;
+  //p.y = p.y + dy * stepsize;
+  
+  //RK4 integration
+  //n1 = n0 + h/6 * (k1 + 2 * k2 +  2 * k3 + k4)
+  float xk1 = readInterp(uwnd, a, b);
+  float yk1 = -readInterp(vwnd, a, b);
+  float xk2 = readInterp(uwnd, a + stepsize * (xk1/2), b + stepsize * (yk1/2));
+  float yk2 = -readInterp(vwnd, a + stepsize * (xk1/2), b + stepsize * (yk1/2));
+  float xk3 = readInterp(uwnd, a + stepsize * (xk2/2), b + stepsize * (yk2/2));
+  float yk3 = -readInterp(vwnd, a + stepsize * (xk2/2), b + stepsize * (yk2/2));
+   float xk4 = readInterp(uwnd, a + stepsize * (xk3), b + stepsize * (yk3));
+  float yk4 = -readInterp(vwnd, a + stepsize * (xk3), b + stepsize * (yk3));
+  p.x = p.x + (stepsize/6 * (xk1 + 2 * xk2 + 2 * xk3 + xk4));  
+  p.y = p.y + (stepsize/6 * (yk1 + 2 * yk2 + 2 * yk3 + yk4));
+
 }
 
 // Reads a bilinearly-interpolated value at the given a and b

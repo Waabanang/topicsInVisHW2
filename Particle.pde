@@ -1,8 +1,6 @@
 class Particle{
-  int x;
-  int y;
-  int lastX;
-  int lastY;
+  float x;
+  float y;
   int life;
   boolean dead;
   
