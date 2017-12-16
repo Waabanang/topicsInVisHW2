@@ -38,7 +38,7 @@ void setup() {
   pcount = 2800; // number of simulated particles
   maxlife = 200; // longest lifetime of a particle, in frames
   minlife = 50; //shortest lifetime of a particle, in frames
-  stepsize = 0.07;
+  stepsize = 0.1;
   //initialize particles to a random position on the screen
   particles = new ArrayList<Particle>(pcount);
   for (int i = 0; i < pcount; i++) {
