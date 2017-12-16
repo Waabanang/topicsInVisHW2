@@ -26,8 +26,6 @@ ArrayList<Particle> particles;
 float stepsize; //Integration step size
 
 
-
-
 void setup() {
   // If this doesn't work on your computer, you can remove the 'P3D'
   // parameter.  On many computers, having P3D should make it run faster
@@ -38,9 +36,9 @@ void setup() {
   uwnd = loadTable("uwnd.csv");
   vwnd = loadTable("vwnd.csv");
 
-  pcount = 3000; // number of simulated particles
+  pcount = 2800; // number of simulated particles
   maxlife = 200; // longest lifetime of a particle, in frames
-  minlife = 0; //shoretest lifetime of a particle, in frames
+  minlife = 50; //shortest lifetime of a particle, in frames
   stepsize = 0.1;
   //initialize particles to a random position on the screen
   particles = new ArrayList<Particle>(pcount);
@@ -69,6 +67,8 @@ void drawMouseLine() {
   // does.
   float dx = readInterp(uwnd, a, b) * 10;
   float dy = -readInterp(vwnd, a, b) * 10;
+  strokeWeight(1);
+  stroke(0);
   line(mouseX, mouseY, mouseX + dx, mouseY + dy);
 }
 
@@ -82,6 +82,8 @@ void drawParticles(){
     } else {
       updateParticle(p);
     }
+    strokeWeight(2);
+    stroke(0, p.alpha);
     vertex(p.x, p.y); 
   }
   endShape();
@@ -92,6 +94,7 @@ void initializeParticle(Particle p){
   p.y = (int)random(height + 1);
   p.life = (int)random(minlife, maxlife + 1);
   p.dead = false;
+  p.alpha = 1;
 }
 
 void updateParticle(Particle p){
@@ -100,8 +103,6 @@ void updateParticle(Particle p){
   float a = p.x * uwnd.getColumnCount() / width;
   float b = p.y * uwnd.getRowCount() / height;
   
-
-
   // Euler's integration
   // n1 = n0 + h * (f(n0))
   //float dx = readInterp(uwnd, a, b);
