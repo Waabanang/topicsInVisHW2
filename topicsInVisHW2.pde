@@ -117,7 +117,7 @@ void updateParticle(Particle p){
   float yk2 = -readInterp(vwnd, a + stepsize * (xk1/2), b + stepsize * (yk1/2));
   float xk3 = readInterp(uwnd, a + stepsize * (xk2/2), b + stepsize * (yk2/2));
   float yk3 = -readInterp(vwnd, a + stepsize * (xk2/2), b + stepsize * (yk2/2));
-   float xk4 = readInterp(uwnd, a + stepsize * (xk3), b + stepsize * (yk3));
+  float xk4 = readInterp(uwnd, a + stepsize * (xk3), b + stepsize * (yk3));
   float yk4 = -readInterp(vwnd, a + stepsize * (xk3), b + stepsize * (yk3));
   p.x = p.x + (stepsize/6 * (xk1 + 2 * xk2 + 2 * xk3 + xk4));  
   p.y = p.y + (stepsize/6 * (yk1 + 2 * yk2 + 2 * yk3 + yk4));
@@ -129,20 +129,29 @@ void updateParticle(Particle p){
 float readInterp(Table tab, float a, float b) {
   float x = a;
   float y = b;
-  int x1 = (int)a;
-  int y1 = (int)b;
-  int x2 = (int)a + 1;
-  int y2 = (int)b + 1;
+  int x1 = floor(a);
+  int y1 = floor(b);
+  int x2 = ceil(a);
+  int y2 = ceil(b);
   float Q11 = readRaw(tab, x1, y1);
   float Q12 = readRaw(tab, x1, y2);
   float Q21 = readRaw(tab, x2, y1);
   float Q22 = readRaw(tab, x2, y2);
-  // TODO: do bilinear interpolation
-  return (1 / ((x2 - x1)*(y2 - y1))) * 
-    (Q11 * (x2 - x) * (y2 - y) +
-    Q21 * (x - x1) * (y2 - y) +
-    Q12 * (x2 - x) * (y - y1) +
-    Q22 * (x - x1) * (y - y1));
+  
+  //linear interpolation in x direction
+  float xLerp1 = lerp(Q11, Q21, x2-x);
+  float xLerp2 = lerp(Q12, Q22, x2-x);
+  //linear interpolation in y direction
+  float yLerp = lerp(xLerp1, xLerp2, y2-y);
+  
+  return yLerp;
+  
+  //Alternate method: write out formula
+  //return (1 / ((x2 - x1)*(y2 - y1))) * 
+  //  (Q11 * (x2 - x) * (y2 - y) +
+  //  Q21 * (x - x1) * (y2 - y) +
+  //  Q12 * (x2 - x) * (y - y1) +
+  //  Q22 * (x - x1) * (y - y1));
 }
 
 // Reads a raw value 
